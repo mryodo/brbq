@@ -30,10 +30,10 @@ def fileParser(
     known=pd.read_excel(layoutfile)
     known_chr1=known[known['Chr']==chrom]
     
-    known_chr1_seg=known_chr1[known_chr1['Genomic bin, Left base']>=lborder]
-    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Left base']<=rborder]
-    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Right base']>=lborder]
-    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Right base']<=rborder]
+    known_chr1_seg=known_chr1[known_chr1['Genomic bin, Left base']>=0]
+    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Left base']<=rborder-lborder]
+    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Right base']>=0]
+    known_chr1_seg=known_chr1_seg[known_chr1_seg['Genomic bin, Right base']<=rborder-lborder]
     
     image=c.matrix(balance=True, sparse=False)[lborder:rborder, lborder:rborder]
     
@@ -248,7 +248,7 @@ def BarbekuFinderWhole(
 
 
     found=np.array(found)    
-    np.savetxt('brbq-'+resultname+'.chr'+chrom, found, delimiter=',')
+    np.savetxt('brbq-'+resultname+'.chr'+str(chrom), found, delimiter=',')
     
     
 def crossFinder(
@@ -289,11 +289,11 @@ def BarbekuFiltrationFromFound(
         intersect.append(i)
         for j in range(i+1, found.shape[0], 1):
             for tmp in intersect: 
-                if brbq.IntersectTough(found[tmp, 0], found[tmp, 1], found[tmp, 2], found[j, 0], found[j, 1], found[j, 2]) and (fl[j]==1):
+                if IntersectTough(found[tmp, 0], found[tmp, 1], found[tmp, 2], found[j, 0], found[j, 1], found[j, 2]) and (fl[j]==1):
                     intersect.append(j)
                     break
         sum+=len(intersect)-1
-        print(sum, end=' ')
+        #print(sum, end=' ')
         if len(intersect)==1:
             continue
         maxes=[]
@@ -310,7 +310,7 @@ def BarbekuFiltrationFromFound(
     for i in range(known_chr1_seg.shape[0]):
         knr=known_chr1_seg['Genomic bin, Right base'].values
         knl=known_chr1_seg['Genomic bin, Left base'].values
-        if brbq.IsDetected(knr[i]-1, knl[i]-1, filtered):
+        if IsDetected(knr[i]-1, knl[i]-1, filtered):
             continue
         else:
             st+=1
