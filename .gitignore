@@ -1,4 +1,4 @@
 *.cool
 *.xlsx
 .ipynb_checkpoints
-.__pychache__
+__pychache__
